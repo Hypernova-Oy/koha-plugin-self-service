@@ -48,18 +48,18 @@ use Koha::Plugin::Fi::KohaSuomi::SelfService::OpenAPI;
 
 use Koha::Plugin::Fi::KohaSuomi::SelfService::Exception;
 
-our $VERSION = "24.05.03";
-
 our $metadata = {
     name            => 'Koha Self Service Permission API',
     author          => 'Lari Taskula',
     date_authored   => '2019-11-05',
-    date_updated    => "2023-05-01",
+    date_updated    => "2025-05-15",
     minimum_version => '22.11.00.000',
     maximum_version => undef,
-    version         => $VERSION,
+    version         => '24.11.01',
     description     => 'This plugin implements Self Service Permission API for use with the Toveri access control device'
 };
+
+our $VERSION = $metadata->{version};
 
 my $logger = Koha::Logger->get;
 

@@ -256,10 +256,18 @@ sub configure {
 sub upgrade {
     my ( $self, $args ) = @_;
 
-    my $dt = Koha::DateUtils::dt_from_string();
-    $self->store_data( { last_upgraded => $dt->ymd('-') . ' ' . $dt->hms(':') } );
+    my $logger = Koha::Logger->get();
 
-    bug33503hotfix($self) unless $ENV{KOHA_PLUGIN_DEV_MODE};
+    eval {
+        my $dt = Koha::DateUtils::dt_from_string();
+        $self->store_data( { last_upgraded => $dt->ymd('-') . ' ' . $dt->hms(':') } );
+
+        bug33503hotfix($self) unless $ENV{KOHA_PLUGIN_DEV_MODE};
+    };
+    if ($@) {
+        $logger->error("Upgrading koha-plugin-self-service failed: $@");
+        die $@;
+    }
 
     return 1;
 }

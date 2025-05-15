@@ -29,7 +29,7 @@ use Try::Tiny;
 use Koha::Plugin::Fi::KohaSuomi::SelfService::OpeningHours;
 use Koha::Plugin::Fi::KohaSuomi::SelfService;
 use Koha::Plugin::Fi::KohaSuomi::SelfService::BlockManager;
-use Koha::Plugin::Fi::KohaSuomi::SelfService::Log;
+use Koha::Plugin::Fi::KohaSuomi::SelfService::Log qw( toString );
 
 use Koha::Exceptions::Patron;
 use Koha::Exceptions::Library::NotFound;
@@ -125,13 +125,7 @@ sub ss_block_get {
                 openapi => { error => $_->{msg} }
             );
         }
-        else {
-            $logger->error($_);
-            return $c->render(
-                status  => 500,
-                openapi => { error => "Something went wrong, check the logs." }
-            );
-        }
+        $c->unhandled_exception($_);
     };
 }
 
@@ -157,13 +151,7 @@ sub ss_block_has {
                 openapi => { error => $_->{msg} }
             );
         }
-        else {
-            $logger->error($_);
-            return $c->render(
-                status  => 500,
-                openapi => { error => "Something went wrong, check the logs." }
-            );
-        }
+        $c->unhandled_exception($_);
     };
 }
 
@@ -173,6 +161,8 @@ sub ss_blocks_list {
 
     try {
         my $borrowernumber = $c->validation->param('borrowernumber');
+
+        _allow_owner($c, $borrowernumber);
 
         #If we didn't get any exceptions, we succeeded
         my $blocks = Koha::Plugin::Fi::KohaSuomi::SelfService::BlockManager::listBlocks($borrowernumber, DateTime->now(time_zone => C4::Context->tz()));
@@ -190,13 +180,7 @@ sub ss_blocks_list {
                 openapi => { error => $_->{msg} }
             );
         }
-        else {
-            $logger->error($_);
-            return $c->render(
-                status  => 500,
-                openapi => { error => "Something went wrong, check the logs." }
-            );
-        }
+        $c->unhandled_exception($_);
     };
 }
 
@@ -229,13 +213,7 @@ sub ss_blocks_post {
         elsif (blessed($_) && $_->isa('Koha::Exceptions::Library::NotFound')) {
             return $c->render( status => 404, openapi => { error => "$_" } );
         }
-        else {
-            $logger->error($_);
-            return $c->render(
-                status  => 500,
-                openapi => { error => "Something went wrong, check the logs." }
-            );
-        }
+        $c->unhandled_exception($_);
     };
 }
 
@@ -268,13 +246,7 @@ sub ss_blocks_put {
         elsif (blessed($_) && $_->isa('Koha::Exceptions::Library::NotFound')) {
             return $c->render( status => 404, openapi => { error => "$_" } );
         }
-        else {
-            $logger->error($_);
-            return $c->render(
-                status  => 500,
-                openapi => { error => "Something went wrong, check the logs." }
-            );
-        }
+        $c->unhandled_exception($_);
     };
 }
 
@@ -337,13 +309,7 @@ sub get_self_service_status {
             };
             return $c->render( status => 200, openapi => $payload );
         }
-        else {
-            $logger->error($_);
-            return $c->render(
-                status  => 500,
-                openapi => { error => "Something went wrong, check the logs." }
-            );
-        }
+        $c->unhandled_exception($_);
     };
 }
 
@@ -372,13 +338,7 @@ sub list_openingHours {
             $logger->error($_);
             return $c->render( status => 500, openapi => { error => "$_" } );
         }
-        else {
-            $logger->error($_);
-            return $c->render(
-                status  => 500,
-                openapi => { error => "Something went wrong, check the logs." }
-            );
-        }
+        $c->unhandled_exception($_);
     };
 }
 
@@ -419,13 +379,7 @@ sub get_openingHours {
             $logger->error($_);
             return $c->render( status => 500, openapi => { error => "$_" } );
         }
-        else {
-            $logger->error($_);
-            return $c->render(
-                status  => 500,
-                openapi => { error => "Something went wrong, check the logs." }
-            );
-        }
+        $c->unhandled_exception($_);
     };
 }
 
@@ -460,13 +414,7 @@ sub get_PINCheck {
             $logger->error($_);
             return $c->render( status => 500, openapi => { error => "$_" } );
         }
-        else {
-            $logger->error($_);
-            return $c->render(
-                status  => 500,
-                openapi => { error => "Something went wrong, check the logs." }
-            );
-        }
+        $c->unhandled_exception($_);
     };
 }
 
