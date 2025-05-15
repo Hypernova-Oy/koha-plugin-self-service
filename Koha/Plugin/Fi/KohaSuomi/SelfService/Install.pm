@@ -36,6 +36,7 @@ use Koha::Libraries;
 use Koha::Library;
 use Koha::Patron::Attributes;
 use Koha::Patron::Attribute::Types;
+use Koha::Plugins::Methods;
 
 use Koha::Plugin::Fi::KohaSuomi::SelfService;
 use Koha::Plugin::Fi::KohaSuomi::SelfService::OpeningHours;
@@ -139,6 +140,7 @@ YAML
         #generate method definitions in DB only in bulk, and they are not generated during single plugin
         #install.
         foreach my $method ( @{ Class::Inspector->methods( $self->{class}, 'public' ) } ) {
+            next if Koha::Plugins::Methods->find( { plugin_class => $self->{class}, plugin_method => $method } );
             Koha::Plugins::Method->new(
                 {
                     plugin_class  => $self->{class},
